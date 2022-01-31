@@ -5,10 +5,6 @@
 // For now, closed switch is HIGH (debounced with external pull-down resistors)
 // because not all digital inputs support INPUT_PULLDOWN on the Artemis ATP.
 
-//#define PIN_A 2
-//#define PIN_B 1
-//#define PIN_COM 17
-//
 //volatile int count = 0;
 //volatile byte a = 0;
 //volatile byte b = 0;
@@ -29,7 +25,7 @@
 #define countof(a) (sizeof(a) / sizeof(a[0]))
 
 #define HSI_A  3
-#define HDG1_S 18
+#define HDG1_S 18 // Single momentary switch
 #define HDG1_B 19
 #define HSI_B  15
 #define ATTD_B 26
@@ -46,16 +42,20 @@
 #define CDI1_B 41
 #define ASPD_A 17
 
-const int HSI[]  = {HSI_A, HSI_B}
-const int HDG1[] = {HDG1_A, HDG1_B, HDG1_S}
-const int HDG2[] = {HDG2_A, HDG2_B}
-const int ATTD[] = {ATTD_A, ATTD_B}
-const int CDI1[] = {CDI1_A, CDI1_B}
-const int CDI2[] = {CDI2_A, CDI2_B}
-const int ASPD[] = {ASPD_A, ASPD_B}
-const int ALTM[] = {ALTM_A, ALTM_B}
+const int HSI[]  = {HSI_A, HSI_B};
+const int HDG1[] = {HDG1_A, HDG1_B};
+const int HDG2[] = {HDG2_A, HDG2_B};
+const int ATTD[] = {ATTD_A, ATTD_B};
+const int CDI1[] = {CDI1_A, CDI1_B};
+const int CDI2[] = {CDI2_A, CDI2_B};
+const int ASPD[] = {ASPD_A, ASPD_B};
+const int ALTM[] = {ALTM_A, ALTM_B};
 
-const int[] ALL_PINS[] = 
+const int[] ALL_ENCODERS[] = {
+  HSI, HDG1, HDG2, ATTD, CDI1, CDI2, ASPD, ALTM
+};
+
+const int encoders_count = countof(ALL_ENCODERS);
 
 void loop() {
 //  Serial.println(count);
@@ -63,7 +63,14 @@ void loop() {
 
 void setup() {
   Serial.begin(115200);
-  
+
+  for (int i = 0; i < encoders_count; i++) {
+    const int[] encoder = ALL_ENCODERS[i];
+    pinMode(encoder[0], INPUT);
+    pinMode(encoder[1], INPUT);
+  }
+
+  pinMode(HDG1_S, INPUT);
 }
 
 void isrCLK() {
