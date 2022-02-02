@@ -42,18 +42,16 @@
 #define CDI1_B 41
 #define ASPD_A 17
 
-const int HSI[]  = {HSI_A, HSI_B};
-const int HDG1[] = {HDG1_A, HDG1_B};
-const int HDG2[] = {HDG2_A, HDG2_B};
-const int ATTD[] = {ATTD_A, ATTD_B};
-const int CDI1[] = {CDI1_A, CDI1_B};
-const int CDI2[] = {CDI2_A, CDI2_B};
-const int ASPD[] = {ASPD_A, ASPD_B};
-const int ALTM[] = {ALTM_A, ALTM_B};
+#define HSI  {HSI_A, HSI_B}
+#define HDG1 {HDG1_A, HDG1_B}
+#define HDG2 {HDG2_A, HDG2_B}
+#define ATTD {ATTD_A, ATTD_B}
+#define CDI1 {CDI1_A, CDI1_B}
+#define CDI2 {CDI2_A, CDI2_B}
+#define ASPD {ASPD_A, ASPD_B}
+#define ALTM {ALTM_A, ALTM_B}
 
-const int[] ALL_ENCODERS[] = {
-  HSI, HDG1, HDG2, ATTD, CDI1, CDI2, ASPD, ALTM
-};
+const int ALL_ENCODERS[][2] = {HSI, HDG1, HDG2, ATTD, CDI1, CDI2, ASPD, ALTM};
 
 const int encoders_count = countof(ALL_ENCODERS);
 
@@ -65,7 +63,7 @@ void setup() {
   Serial.begin(115200);
 
   for (int i = 0; i < encoders_count; i++) {
-    const int[] encoder = ALL_ENCODERS[i];
+    const int encoder[2] = ALL_ENCODERS[i];
     pinMode(encoder[0], INPUT);
     pinMode(encoder[1], INPUT);
   }
