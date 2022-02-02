@@ -56,27 +56,27 @@ const int ALL_ENCODERS[][2] = {HSI, HDG1, HDG2, ATTD, CDI1, CDI2, ASPD, ALTM};
 const int encoders_count = countof(ALL_ENCODERS);
 
 void loop() {
-//  Serial.println(count);
+  //  Serial.println(count);
 }
 
 void setup() {
   Serial.begin(115200);
 
   for (int i = 0; i < encoders_count; i++) {
-    const int encoder[2] = ALL_ENCODERS[i];
-    pinMode(encoder[0], INPUT);
-    pinMode(encoder[1], INPUT);
+    auto& [a, b] = ALL_ENCODERS[i];
+    pinMode(a, INPUT);
+    pinMode(b, INPUT);
   }
 
   pinMode(HDG1_S, INPUT);
 }
-
-void isrCLK() {
-  a = digitalRead(PIN_A);
-  b = digitalRead(PIN_B);
-  if (a != b) {
-    count--;
-  } else {
-    count++;
-  }
-}
+//
+//void isrCLK() {
+//  a = digitalRead(PIN_A);
+//  b = digitalRead(PIN_B);
+//  if (a != b) {
+//    count--;
+//  } else {
+//    count++;
+//  }
+//}
