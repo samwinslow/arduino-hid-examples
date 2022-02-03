@@ -34,8 +34,11 @@
 #define ASPD {ASPD_A, ASPD_B}
 #define ALTM {ALTM_A, ALTM_B}
 
+typedef void (*func_ptr)();
+
 const int ALL_ENCODERS[][2] = {HSI, HDG1, HDG2, ATTD, CDI1, CDI2, ASPD, ALTM};
 const int encoders_count = countof(ALL_ENCODERS);
+
 int encoder_values[encoders_count] = {0};
 
 void read_encoder(int index) {
@@ -43,9 +46,9 @@ void read_encoder(int index) {
   byte a = digitalRead(encoder[0]);
   byte b = digitalRead(encoder[1]);
   if (a != b) {
-    // decrement HSI value
+    // decrement encoder_values[index]
   } else {
-    // increment HSI value
+    // increment encoder_values[index]
   }
 }
 
@@ -73,8 +76,11 @@ void isr_ASPD() {
 void isr_ALTM() {
   read_encoder(7);
 }
+void isr_HDG1_S() {
+  // Process button click on HDG1_S
+}
 
-//int (*isrs[encoders_count]) (void);
+func_ptr isrs[encoders_count] = {&isr_HSI, &isr_HDG1, &isr_HDG2, &isr_ATTD, &isr_CDI1, &isr_CDI2, &isr_ASPD, &isr_ALTM};
 
 void loop() {
   //  Send encoder values over serial
@@ -84,17 +90,12 @@ void setup() {
   Serial.begin(115200);
 
   for (int i = 0; i < encoders_count; i++) {
-    pinMode(ALL_ENCODERS[i][0], INPUT);
-    pinMode(ALL_ENCODERS[i][1], INPUT);
+    auto encoder = ALL_ENCODERS[i];
+    pinMode(encoder[0], INPUT);
+    pinMode(encoder[1], INPUT);
+    attachInterrupt(encoder[1], isrs[i], CHANGE);
   }
-  pinMode(HDG1_S, INPUT);
 
-  attachInterrupt(HSI_B, isr_HSI, CHANGE);
-  attachInterrupt(HDG1_B, isr_HDG1, CHANGE);
-  attachInterrupt(HDG2_B, isr_HDG2, CHANGE);
-  attachInterrupt(ATTD_B, isr_ATTD, CHANGE);
-  attachInterrupt(CDI1_B, isr_CDI1, CHANGE);
-  attachInterrupt(CDI2_B, isr_CDI2, CHANGE);
-  attachInterrupt(ASPD_B, isr_ASPD, CHANGE);
-  attachInterrupt(ALTM_B, isr_ALTM, CHANGE);
+  pinMode(HDG1_S, INPUT);
+  attachInterrupt(HDG1_S, isr_HDG1_S, RISING);
 }
