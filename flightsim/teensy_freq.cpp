@@ -16,6 +16,7 @@ FlightSimCommand ComCoarseDown;
 FlightSimCommand ComFineUp;
 FlightSimCommand ComFineDown;
 FlightSimInteger ComFrequencyHz;
+FlightSimInteger ComStbyFrequencyHz;
 
 // variables
 long encoder_prev_coarse = 0;
@@ -36,6 +37,26 @@ void lcdPrintAt(int col, int row, char* str) {
   HWSERIAL.write(22);
 }
 
+void updateActive(long freq) {
+  char mhz[3];
+  sprintf(mhz, "%lu", freq / 100);
+  lcdPrintAt(2, -12, mhz);
+  lcdPrintAt(2, -9, ".");
+  char khz[2];
+  sprintf(khz, "%lu", freq % 100);
+  lcdPrintAt(2, -8, khz);
+}
+
+void updateStandby(long freq) {
+  char mhz[3];
+  sprintf(mhz, "%lu", freq / 100);
+  lcdPrintAt(2, -2, mhz);
+  lcdPrintAt(2, 1, ".");
+  char khz[2];
+  sprintf(khz, "%lu", freq % 100);
+  lcdPrintAt(2, 2, khz);
+}
+
 void setup() {
   HWSERIAL.begin(19200);
   delay(500);
@@ -45,11 +66,6 @@ void setup() {
   lcdEmpty();
   lcdPrintAt(1, 3, "COM1        STBY");
 
-  //  lcd.on();
-  //  lcd.empty();
-  //  lcd.backLightOn();
-  //  lcd.at(1, 3, "");
-
 
   // configure the X-Plane variables
   ComCoarseUp = XPlaneRef("sim/radios/stby_com1_coarse_up");
@@ -57,7 +73,9 @@ void setup() {
   ComFineUp = XPlaneRef("sim/radios/stby_com1_fine_up");
   ComFineDown = XPlaneRef("sim/radios/stby_com1_fine_down");
   ComFrequencyHz = XPlaneRef("sim/cockpit2/radios/actuators/com1_frequency_hz");
-  //  ComFrequencyHz.onChange(update_lcd);  // update the LCD when X-Plane changes
+  ComFrequencyHz.onChange(updateActive);
+  ComStbyFrequencyHz = XPlaneRef("sim/cockpit2/radios/actuators/com1_standby_frequency_hz");
+  ComStbyFrequencyHz.onChange(updateStandby);
 
 }
 
@@ -81,6 +99,7 @@ void loop() {
     ComFineDown.once();
     encoder_prev_fine = enc_fine;
   }
+
 
   // read the pushbuttons, and send X-Plane commands when they're pressed
   //  buttonUp.update();
