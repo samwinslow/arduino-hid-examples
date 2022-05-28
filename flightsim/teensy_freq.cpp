@@ -54,7 +54,15 @@ void updateStandby(long freq) {
   lcdPrintAt(2, 1, ".");
   char khz[2];
   sprintf(khz, "%lu", freq % 100);
-  lcdPrintAt(2, 2, khz);
+  if (freq % 10 == 0) {
+    lcdPrintAt(2, 2, khz);
+    lcdPrintAt(2, 3, "0");
+  } else if (freq % 100 < 10) {
+    lcdPrintAt(2, 2, "0");
+    lcdPrintAt(2, 4, khz);
+  } else {
+    lcdPrintAt(2, 2, khz);
+  }
 }
 
 void setup() {
