@@ -44,7 +44,15 @@ void updateActive(long freq) {
   lcdPrintAt(2, -9, ".");
   char khz[2];
   sprintf(khz, "%lu", freq % 100);
-  lcdPrintAt(2, -8, khz);
+  if (freq % 10 == 0) {
+    lcdPrintAt(2, -8, khz);
+    lcdPrintAt(2, -7, "0");
+  } else if (freq % 100 < 10) {
+    lcdPrintAt(2, -8, "0");
+    lcdPrintAt(2, -7, khz);
+  } else {
+    lcdPrintAt(2, -8, khz);
+  }
 }
 
 void updateStandby(long freq) {
@@ -69,7 +77,9 @@ void setup() {
   HWSERIAL.begin(19200);
   delay(500);
   HWSERIAL.write(24); // on
-  delay(50);
+  delay(10);
+  HWSERIAL.write(17); // Backlight on
+  delay(10);
 
   lcdEmpty();
   lcdPrintAt(1, 3, "COM1        STBY");
