@@ -5,16 +5,16 @@
 #include <Bounce.h>
 #include <Encoder.h>
 
-//Bounce buttonUp = Bounce(3, 5);      // Pushbutton on pin 3, 5ms debounce
-//Bounce buttonDown = Bounce(4, 5);    // Pushbutton on pin 4, 5ms debounce
-Encoder wheelCoarse = Encoder(11, 12);       // Rotary Encoder
-Encoder wheelFine = Encoder(10, 9);       // Rotary Encoder
+Bounce toggleButton = Bounce(7, 5); // pin 7, 5ms debounce
+Encoder wheelCoarse = Encoder(11, 12);
+Encoder wheelFine = Encoder(10, 9);
 
 // X-Plane objects, 3 command refs and 1 data ref
 FlightSimCommand ComCoarseUp;
 FlightSimCommand ComCoarseDown;
 FlightSimCommand ComFineUp;
 FlightSimCommand ComFineDown;
+FlightSimCommand ComStbyFlip;
 FlightSimInteger ComFrequencyHz;
 FlightSimInteger ComStbyFrequencyHz;
 
@@ -80,6 +80,7 @@ void setup() {
   ComCoarseDown = XPlaneRef("sim/radios/stby_com1_coarse_down");
   ComFineUp = XPlaneRef("sim/radios/stby_com1_fine_up");
   ComFineDown = XPlaneRef("sim/radios/stby_com1_fine_down");
+  ComStbyFlip = XPlaneRef("sim/radios/com1_standy_flip");
   ComFrequencyHz = XPlaneRef("sim/cockpit2/radios/actuators/com1_frequency_hz");
   ComFrequencyHz.onChange(updateActive);
   ComStbyFrequencyHz = XPlaneRef("sim/cockpit2/radios/actuators/com1_standby_frequency_hz");
@@ -108,20 +109,8 @@ void loop() {
     encoder_prev_fine = enc_fine;
   }
 
-
-  // read the pushbuttons, and send X-Plane commands when they're pressed
-  //  buttonUp.update();
-  //  buttonDown.update();
-  //  if (buttonUp.fallingEdge()) {
-  //    ComCoarseUp = 1;
-  //  }
-  //  if (buttonUp.risingEdge()) {
-  //    ComCoarseUp = 0;
-  //  }
-  //  if (buttonDown.fallingEdge()) {
-  //    ComCoarseDown = 1;
-  //  }
-  //  if (buttonDown.risingEdge()) {
-  //    ComCoarseDown = 0;
-  //  }
+  toggleButton.update();
+  if (toggleButton.fallingEdge()) {
+    ComStbyFlip.once();
+  }
 }
